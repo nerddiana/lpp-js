@@ -61,3 +61,21 @@ test("Lexer delimiters", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer asignment", function (t) {
+    const src = "variable cinco = 5;";
+    const lexer = new Lexer(src);
+    const tokens = Array(5)
+        .fill()
+        .map(() => lexer.nextToken());
+    const expectedTokens = [
+        new Token(TokenType.LET, "variable"),
+        new Token(TokenType.IDENT, "cinco"),
+        new Token(TokenType.ASSIGN, "="),
+        new Token(TokenType.INT, "5"),
+        new Token(TokenType.SEMICOLON, ";"),
+    ];
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});

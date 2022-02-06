@@ -1,4 +1,4 @@
-const { Token, TokenType } = require("./token.js");
+const { Token, TokenType, lookupTokenType } = require("./token.js");
 
 class Lexer {
     constructor(source) {
@@ -10,6 +10,8 @@ class Lexer {
     }
 
     nextToken() {
+        this.#skipWhiteSpace();
+
         const match = (str) => new RegExp(str).test(this._character);
         let token = new Token(TokenType.ILLEGAL, this._character);
 
@@ -31,10 +33,21 @@ class Lexer {
             token = new Token(TokenType.COMMA, this._character);
         } else if (match(/^;$/)) {
             token = new Token(TokenType.SEMICOLON, this._character);
+        } else if (this.#isLetter(this._character)) {
+            const literal = this.#readIdentifier();
+            const tokenType = lookupTokenType(literal);
+            return new Token(tokenType, literal);
+        } else if (this.#isNumber(this._character)) {
+            const literal = this.#readNumber();
+            return new Token(TokenType.INT, literal);
         }
 
         this.#readCharacter();
         return token;
+    }
+
+    #isLetter(character) {
+        return new RegExp(/^[a-záéíóúA-ZÁÉÍÓÚñÑ_]$/).test(character);
     }
 
     #readCharacter() {
@@ -46,6 +59,33 @@ class Lexer {
 
         this._position = this._read_position;
         this._read_position++;
+    }
+
+    #isNumber(character) {
+        return new RegExp(/^\d$/).test(character);
+    }
+
+    #readNumber() {
+        const initial_position = this._position;
+        while (this.#isNumber(this._character)) {
+            this.#readCharacter();
+        }
+        return this._source.slice(initial_position, this._position);
+    }
+
+    #readIdentifier() {
+        const initial_position = this._position;
+        while (this.#isLetter(this._character)) {
+            this.#readCharacter();
+        }
+        return this._source.slice(initial_position, this._position);
+    }
+
+    #skipWhiteSpace() {
+        const isWhiteSpace = (str) => new RegExp(/^\s$/).test(str);
+        while (isWhiteSpace(this._character)) {
+            this.#readCharacter();
+        }
     }
 }
 
