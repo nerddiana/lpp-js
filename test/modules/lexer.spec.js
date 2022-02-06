@@ -79,3 +79,34 @@ test("Lexer asignment", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer function declaration", function (t) {
+    const src = `
+        variable suma = procedimiento(x, y) {
+            x + y;
+        };
+    `;
+    const lexer = new Lexer(src);
+    const expectedTokens = [
+        new Token(TokenType.LET, "variable"),
+        new Token(TokenType.IDENT, "suma"),
+        new Token(TokenType.ASSIGN, "="),
+        new Token(TokenType.FUNCTION, "procedimiento"),
+        new Token(TokenType.LPAREN, "("),
+        new Token(TokenType.IDENT, "x"),
+        new Token(TokenType.COMMA, ","),
+        new Token(TokenType.IDENT, "y"),
+        new Token(TokenType.RPAREN, ")"),
+        new Token(TokenType.LBRACE, "{"),
+        new Token(TokenType.IDENT, "x"),
+        new Token(TokenType.PLUS, "+"),
+        new Token(TokenType.IDENT, "y"),
+        new Token(TokenType.SEMICOLON, ";"),
+        new Token(TokenType.RBRACE, "}"),
+        new Token(TokenType.SEMICOLON, ";"),
+    ];
+    const tokens = expectedTokens.map(() => lexer.nextToken());
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});

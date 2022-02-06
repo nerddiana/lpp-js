@@ -29,6 +29,7 @@ class Token {
 const lookupTokenType = (literal) => {
     const keywords = {
         variable: TokenType.LET,
+        procedimiento: TokenType.FUNCTION,
     };
     const isKeyword = Object.keys(keywords).includes(literal);
     return isKeyword ? keywords[literal] : TokenType.IDENT;
