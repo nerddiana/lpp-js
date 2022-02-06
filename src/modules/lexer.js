@@ -17,6 +17,8 @@ class Lexer {
             token = new Token(TokenType.ASSIGN, this._character);
         } else if (match(/^\+$/)) {
             token = new Token(TokenType.PLUS, this._character);
+        } else if (match(/^$/)) {
+            token = new Token(TokenType.EOF, this._character);
         }
 
         this.#readCharacter();

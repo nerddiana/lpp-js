@@ -28,3 +28,19 @@ test("Lexer one character operator", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer end of file", function (t) {
+    const src = "+";
+    const lexer = new Lexer(src);
+    const tokens = src
+        .split("")
+        .concat(Array(1).fill())
+        .map((el, i) => lexer.nextToken());
+    const expectedTokens = [
+        new Token(TokenType.PLUS, "+"),
+        new Token(TokenType.EOF, ""),
+    ];
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});
