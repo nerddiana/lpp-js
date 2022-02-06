@@ -16,7 +16,11 @@ class Lexer {
         let token = new Token(TokenType.ILLEGAL, this._character);
 
         if (match(/^=$/)) {
-            token = new Token(TokenType.ASSIGN, this._character);
+            if (this.#peekCharacter() === "=") {
+                token = this.#makeTwoCharacterToken(TokenType.EQ);
+            } else {
+                token = new Token(TokenType.ASSIGN, this._character);
+            }
         } else if (match(/^\+$/)) {
             token = new Token(TokenType.PLUS, this._character);
         } else if (match(/^-$/)) {
@@ -44,7 +48,11 @@ class Lexer {
         } else if (match(/^>$/)) {
             token = new Token(TokenType.GT, this._character);
         } else if (match(/^\!$/)) {
-            token = new Token(TokenType.NEGATION, this._character);
+            if (this.#peekCharacter() === "=") {
+                token = this.#makeTwoCharacterToken(TokenType.NOT_EQ);
+            } else {
+                token = new Token(TokenType.NEGATION, this._character);
+            }        
         } else if (this.#isLetter(this._character)) {
             const literal = this.#readIdentifier();
             const tokenType = lookupTokenType(literal);
@@ -75,6 +83,20 @@ class Lexer {
 
     #isNumber(character) {
         return new RegExp(/^\d$/).test(character);
+    }
+
+    #makeTwoCharacterToken(tokenType) {
+        const prefix = this._character;
+        this.#readCharacter();
+        const suffix = this._character;
+        return new Token(tokenType, `${prefix}${suffix}`);
+    }
+
+    #peekCharacter() {
+        if (this._read_position >= this._source.length) {
+            return "";
+        }
+        return this._source[this._read_position];
     }
 
     #readNumber() {

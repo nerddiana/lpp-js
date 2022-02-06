@@ -175,3 +175,26 @@ test("Lexer control statement", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer two character operators", function (t) {
+    const src = `
+        10 == 10;
+        10 != 9;
+    `;
+
+    const lexer = new Lexer(src);
+    const expectedTokens = [
+        new Token(TokenType.INT, "10"),
+        new Token(TokenType.EQ, "=="),
+        new Token(TokenType.INT, "10"),
+        new Token(TokenType.SEMICOLON, ";"),
+        new Token(TokenType.INT, "10"),
+        new Token(TokenType.NOT_EQ, "!="),
+        new Token(TokenType.INT, "9"),
+        new Token(TokenType.SEMICOLON, ";"),
+    ];
+    const tokens = expectedTokens.map(() => lexer.nextToken());
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});
