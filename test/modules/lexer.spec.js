@@ -17,12 +17,18 @@ test("Lexer test ilegal", function (t) {
 });
 
 test("Lexer one character operator", function (t) {
-    const src = "=+";
+    const src = "=+-/*<>!";
     const lexer = new Lexer(src);
     const tokens = src.split("").map(() => lexer.nextToken());
     const expectedTokens = [
         new Token(TokenType.ASSIGN, "="),
         new Token(TokenType.PLUS, "+"),
+        new Token(TokenType.MINUS, "-"),
+        new Token(TokenType.DIVISION, "/"),
+        new Token(TokenType.MULTIPLICATION, "*"),
+        new Token(TokenType.LT, "<"),
+        new Token(TokenType.GT, ">"),
+        new Token(TokenType.NEGATION, "!"),
     ];
 
     t.deepEqual(tokens, expectedTokens);
