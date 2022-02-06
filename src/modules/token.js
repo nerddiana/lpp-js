@@ -30,6 +30,10 @@ class TokenType {
     constructor(name) {
         this.name = name;
     }
+
+    toString() {
+        return `TokenType ${this.name}}`;
+    }
 }
 
 class Token {
