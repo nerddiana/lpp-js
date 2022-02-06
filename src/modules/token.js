@@ -31,6 +31,10 @@ class TokenType {
         this.name = name;
     }
 
+    static getTokenTypes() {
+        return Object.keys(this);
+    }
+
     toString() {
         return `TokenType ${this.name}}`;
     }
