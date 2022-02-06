@@ -198,3 +198,22 @@ test("Lexer two character operators", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer fix identifiers with numbers", function (t) {
+    const src = `
+        variable edad_1 = 24;
+    `;
+
+    const lexer = new Lexer(src);
+    const expectedTokens = [
+        new Token(TokenType.LET, "variable"),
+        new Token(TokenType.IDENT, "edad_1"),
+        new Token(TokenType.ASSIGN, "="),
+        new Token(TokenType.INT, "24"),
+        new Token(TokenType.SEMICOLON, ";"),
+    ];
+    const tokens = expectedTokens.map(() => lexer.nextToken());
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});

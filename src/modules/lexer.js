@@ -109,8 +109,13 @@ class Lexer {
 
     #readIdentifier() {
         const initial_position = this._position;
-        while (this.#isLetter(this._character)) {
+        let is_first_letter = true;
+        while (
+            this.#isLetter(this._character) ||
+            (!is_first_letter && this.#isNumber(this._character))
+        ) {
             this.#readCharacter();
+            is_first_letter = false;
         }
         return this._source.slice(initial_position, this._position);
     }
