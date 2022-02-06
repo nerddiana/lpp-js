@@ -33,6 +33,8 @@ class Lexer {
             token = new Token(TokenType.COMMA, this._character);
         } else if (match(/^;$/)) {
             token = new Token(TokenType.SEMICOLON, this._character);
+        } else if (match(/^<$/)) {
+            token = new Token(TokenType.LT, this._character);
         } else if (this.#isLetter(this._character)) {
             const literal = this.#readIdentifier();
             const tokenType = lookupTokenType(literal);

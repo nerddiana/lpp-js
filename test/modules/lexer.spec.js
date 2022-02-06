@@ -134,3 +134,38 @@ test("Lexer function call", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer control statement", function (t) {
+    const src = `
+        si (5 < 10) {
+            regresa verdadero;
+        } si_no {
+            regresa falso;
+        }
+    `;
+
+    const lexer = new Lexer(src);
+    const expectedTokens = [
+        new Token(TokenType.IF, "si"),
+        new Token(TokenType.LPAREN, "("),
+        new Token(TokenType.INT, "5"),
+        new Token(TokenType.LT, "<"),
+        new Token(TokenType.INT, "10"),
+        new Token(TokenType.RPAREN, ")"),
+        new Token(TokenType.LBRACE, "{"),
+        new Token(TokenType.RETURN, "regresa"),
+        new Token(TokenType.TRUE, "verdadero"),
+        new Token(TokenType.SEMICOLON, ";"),
+        new Token(TokenType.RBRACE, "}"),
+        new Token(TokenType.ELSE, "si_no"),
+        new Token(TokenType.LBRACE, "{"),
+        new Token(TokenType.RETURN, "regresa"),
+        new Token(TokenType.FALSE, "falso"),
+        new Token(TokenType.SEMICOLON, ";"),
+        new Token(TokenType.RBRACE, "}"),
+    ];
+    const tokens = expectedTokens.map(() => lexer.nextToken());
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});
