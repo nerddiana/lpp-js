@@ -10,10 +10,16 @@ class Lexer {
     }
 
     nextToken() {
-        const token = new Token(TokenType.ILLEGAL, this._character);
+        const match = (str) => new RegExp(str).test(this._character);
+        let token = new Token(TokenType.ILLEGAL, this._character);
+
+        if (match(/^=$/)) {
+            token = new Token(TokenType.ASSIGN, this._character);
+        } else if (match(/^\+$/)) {
+            token = new Token(TokenType.PLUS, this._character);
+        }
 
         this.#readCharacter();
-
         return token;
     }
 

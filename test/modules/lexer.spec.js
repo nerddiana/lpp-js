@@ -15,3 +15,16 @@ test("Lexer test ilegal", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer one character operator", function (t) {
+    const src = "=+";
+    const lexer = new Lexer(src);
+    const tokens = src.split("").map(() => lexer.nextToken());
+    const expectedTokens = [
+        new Token(TokenType.ASSIGN, "="),
+        new Token(TokenType.PLUS, "+"),
+    ];
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});
