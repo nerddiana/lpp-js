@@ -4,7 +4,7 @@ class TokenType {
     static EOF = new TokenType("EOF")
     static FUNCTION = new TokenType("FUNCTION")
     static IDENT = new TokenType("IDENT")
-    static ILEGAL = new TokenType("ILEGAL")
+    static ILLEGAL = new TokenType("ILLEGAL")
     static INT = new TokenType("INT")
     static LBRACE = new TokenType("LBRACE")
     static LET = new TokenType("LET")
@@ -24,4 +24,9 @@ class Token {
         this.tokenType = tokenType;
         this.literal = literal;
     }
+}
+
+module.exports = {
+    TokenType,
+    Token
 }
