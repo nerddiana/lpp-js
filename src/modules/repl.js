@@ -1,12 +1,15 @@
 const { Lexer } = require("./lexer.js");
+const { TokenType } = require("./token.js");
 
 module.exports = {
     lexer(uInput, context, filename, callback) {
-        console.log(context);
         const lexer = new Lexer(uInput);
-        const tokens = uInput
-            .split("")
-            .map(() => lexer.nextToken());
+        let tokens = [];
+        while (true) {
+            const token = lexer.nextToken();
+            if (token.tokenType === TokenType.EOF) break;
+            tokens.push(token);
+        }
         callback(tokens);
     },
 };
