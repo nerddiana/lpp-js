@@ -110,3 +110,27 @@ test("Lexer function declaration", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer function call", function (t) {
+    const src = `
+        variable resultado = suma(dos, tres);
+    `;
+
+    const lexer = new Lexer(src);
+    const expectedTokens = [
+        new Token(TokenType.LET, "variable"),
+        new Token(TokenType.IDENT, "resultado"),
+        new Token(TokenType.ASSIGN, "="),
+        new Token(TokenType.IDENT, "suma"),
+        new Token(TokenType.LPAREN, "("),
+        new Token(TokenType.IDENT, "dos"),
+        new Token(TokenType.COMMA, ","),
+        new Token(TokenType.IDENT, "tres"),
+        new Token(TokenType.RPAREN, ")"),
+        new Token(TokenType.SEMICOLON, ";"),
+    ];
+    const tokens = expectedTokens.map(() => lexer.nextToken());
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});
