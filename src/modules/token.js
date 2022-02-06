@@ -37,6 +37,10 @@ class Token {
         this.tokenType = tokenType;
         this.literal = literal;
     }
+
+    toString() {
+        return `Token ${JSON.stringify(this)}`;
+    }
 }
 
 const lookupTokenType = (literal) => {
