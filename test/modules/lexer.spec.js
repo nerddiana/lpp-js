@@ -2,7 +2,7 @@ let test = require("tape");
 let { TokenType, Token } = require("../../src/modules/token.js");
 let { Lexer } = require("../../src/modules/lexer.js");
 
-test("Lexer test ilegal", function (t) {
+test("[LEXER]: test ilegal", function (t) {
     const src = "¡¿@";
     const lexer = new Lexer(src);
     const tokens = src.split("").map(() => lexer.nextToken());
@@ -16,7 +16,7 @@ test("Lexer test ilegal", function (t) {
     t.end();
 });
 
-test("Lexer one character operator", function (t) {
+test("[LEXER]: one character operator", function (t) {
     const src = "=+-/*<>!";
     const lexer = new Lexer(src);
     const tokens = src.split("").map(() => lexer.nextToken());
@@ -35,7 +35,7 @@ test("Lexer one character operator", function (t) {
     t.end();
 });
 
-test("Lexer end of file", function (t) {
+test("[LEXER]: end of file", function (t) {
     const src = "+";
     const lexer = new Lexer(src);
     const tokens = src
@@ -51,7 +51,7 @@ test("Lexer end of file", function (t) {
     t.end();
 });
 
-test("Lexer delimiters", function (t) {
+test("[LEXER]: delimiters", function (t) {
     const src = "(){},;";
     const lexer = new Lexer(src);
     const tokens = src.split("").map(() => lexer.nextToken());
@@ -68,7 +68,7 @@ test("Lexer delimiters", function (t) {
     t.end();
 });
 
-test("Lexer asignment", function (t) {
+test("[LEXER]: asignment", function (t) {
     const src = "variable cinco = 5;";
     const lexer = new Lexer(src);
     const tokens = Array(5)
@@ -86,7 +86,7 @@ test("Lexer asignment", function (t) {
     t.end();
 });
 
-test("Lexer function declaration", function (t) {
+test("[LEXER]: function declaration", function (t) {
     const src = `
         variable suma = procedimiento(x, y) {
             x + y;
@@ -117,7 +117,7 @@ test("Lexer function declaration", function (t) {
     t.end();
 });
 
-test("Lexer function call", function (t) {
+test("[LEXER]: function call", function (t) {
     const src = `
         variable resultado = suma(dos, tres);
     `;
@@ -141,7 +141,7 @@ test("Lexer function call", function (t) {
     t.end();
 });
 
-test("Lexer control statement", function (t) {
+test("[LEXER]: control statement", function (t) {
     const src = `
         si (5 < 10) {
             regresa verdadero;
@@ -176,7 +176,7 @@ test("Lexer control statement", function (t) {
     t.end();
 });
 
-test("Lexer two character operators", function (t) {
+test("[LEXER]: two character operators", function (t) {
     const src = `
         10 == 10;
         10 != 9;
@@ -199,7 +199,7 @@ test("Lexer two character operators", function (t) {
     t.end();
 });
 
-test("Lexer fix identifiers with numbers", function (t) {
+test("[LEXER]: fix identifiers with numbers", function (t) {
     const src = `
         variable edad_1 = 24;
     `;
