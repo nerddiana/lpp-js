@@ -44,3 +44,20 @@ test("Lexer end of file", function (t) {
     t.deepEqual(tokens, expectedTokens);
     t.end();
 });
+
+test("Lexer delimiters", function (t) {
+    const src = "(){},;";
+    const lexer = new Lexer(src);
+    const tokens = src.split("").map(() => lexer.nextToken());
+    const expectedTokens = [
+        new Token(TokenType.LPAREN, "("),
+        new Token(TokenType.RPAREN, ")"),
+        new Token(TokenType.LBRACE, "{"),
+        new Token(TokenType.RBRACE, "}"),
+        new Token(TokenType.COMMA, ","),
+        new Token(TokenType.SEMICOLON, ";"),
+    ];
+
+    t.deepEqual(tokens, expectedTokens);
+    t.end();
+});

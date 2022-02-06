@@ -19,6 +19,18 @@ class Lexer {
             token = new Token(TokenType.PLUS, this._character);
         } else if (match(/^$/)) {
             token = new Token(TokenType.EOF, this._character);
+        } else if (match(/^\($/)) {
+            token = new Token(TokenType.LPAREN, this._character);
+        } else if (match(/^\)$/)) {
+            token = new Token(TokenType.RPAREN, this._character);
+        } else if (match(/^\{$/)) {
+            token = new Token(TokenType.LBRACE, this._character);
+        } else if (match(/^\}$/)) {
+            token = new Token(TokenType.RBRACE, this._character);
+        } else if (match(/^,$/)) {
+            token = new Token(TokenType.COMMA, this._character);
+        } else if (match(/^;$/)) {
+            token = new Token(TokenType.SEMICOLON, this._character);
         }
 
         this.#readCharacter();
