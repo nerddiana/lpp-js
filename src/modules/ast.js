@@ -31,9 +31,8 @@ class Expression extends ASTNode {
 }
 
 class Program extends ASTNode {
-    constructor(statements) {
+    constructor(statements = []) {
         super();
-        if (!statements) return;
         if (!Array.isArray(statements)) {
             throw new Error(`Program constructor needs an Array of Statements`);
         }
@@ -41,7 +40,7 @@ class Program extends ASTNode {
             return s instanceof Statement;
         });
         if (!allAreStatements) {
-            throw new Error(`Program constructor needs an Array of Statements 2`);
+            throw new Error(`Program constructor needs an Array of Statements`);
         }
         this.statements = statements;
     }
@@ -54,9 +53,30 @@ class Program extends ASTNode {
     }
 }
 
+class Identifier extends Expression {
+    constructor(token, value) {
+        super(token);
+        this.value = value;
+    }
+
+    toString() {
+        return this.value;
+    }
+}
+
+class LetStatement extends Statement {
+    constructor(token, name = null, value = null) {
+        super(token);
+        this.name = name;
+        this.value = value;
+    }
+}
+
 module.exports = {
     ASTNode,
     Statement,
     Expression,
     Program,
+    Identifier,
+    LetStatement,
 };
