@@ -167,6 +167,8 @@ const testLiteralExpression = function (
 
     if (value_type === "string") {
         testIdentifier(t, expression, expected_value);
+    } else if (value_type === "number") {
+        testInteger(t, expression, expected_value);
     } else {
         t.fail();
     }
@@ -205,4 +207,39 @@ test("[PARSER]: test identifier expression", function (t) {
     }
 
     testLiteralExpression(t, expression_statement.expression, "foobar");
+});
+
+const testInteger = function (
+    t,
+    expression,
+    expected_value
+) {
+    t.equal(typeof expected_value === "number", true)
+
+    const integer = expression;
+
+    t.equal(integer.value, expected_value);
+    t.equal(integer.token.literal, `${expected_value}`);
+    t.end();
+}
+
+test("[PARSER]: test integer expression", function (t) {
+    const src = `
+        5;
+    `;
+
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    const program = parser.parseProgram();
+
+    testProgramStatements(t, parser, program);
+
+    const statement = program.statements[0];
+
+    if (statement === null) {
+        throw new Error(`statement is null`);
+    }
+
+    testLiteralExpression(t, statement.expression, 5);
 });

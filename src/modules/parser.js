@@ -3,7 +3,8 @@ const {
     ExpressionStatement,
     LetStatement,
     ReturnStatement,
-    Identifier
+    Identifier,
+    Integer,
 } = require("./ast");
 const { Token, TokenType } = require("./token");
 const { Lexer } = require("./lexer");
@@ -105,7 +106,7 @@ class Parser {
         let prefix_parse_fn = null
 
         try {
-            prefix_parse_fn = this._prefix_parse_fns[this._current_token.tokenType].bind(this);
+            prefix_parse_fn = this._prefix_parse_fns[this._current_token.tokenType.name];
         } catch (error) {
             return null;
         }
@@ -143,6 +144,27 @@ class Parser {
             this._current_token,
             this._current_token.literal,
         );
+    }
+
+    #parseInteger() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        const integer = new Integer(
+            this._current_token,
+            this._current_token.literal,
+        );
+
+        try {
+            integer.value = parseInt(this._current_token.literal);
+        } catch (error) {
+            const message = `No se pudo parsear ${this._current_token.literal} cómo un entero.`;
+            this._errors.push(message);
+            return null;
+        }
+
+        return integer;
     }
 
     #parseLetStatement() {
@@ -202,7 +224,8 @@ class Parser {
 
     #registerPrefixFns() {
         return {
-            [TokenType.IDENT]: this.#parseIdentifier
+            [TokenType.IDENT.name]: this.#parseIdentifier.bind(this),
+            [TokenType.INT.name]: this.#parseInteger.bind(this),
         };
     }
 

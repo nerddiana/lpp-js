@@ -61,6 +61,13 @@ class Identifier extends Expression {
     }
 }
 
+class Integer extends Expression {
+    constructor(token, value) {
+        super(token);
+        this.value = value;
+    }
+}
+
 class LetStatement extends Statement {
     constructor(token, name = null, value = null) {
         super(token);
@@ -105,6 +112,7 @@ module.exports = {
     ExpressionStatement,
     Program,
     Identifier,
+    Integer,
     LetStatement,
     ReturnStatement,
 };
