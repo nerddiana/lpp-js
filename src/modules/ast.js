@@ -23,9 +23,6 @@ class Statement extends ASTNode {
 class Expression extends ASTNode {
     constructor(token) {
         super();
-        if (token instanceof Token === false) {
-            throw new Error(`${JSON.stringify(token)} isn't a valid Token`);
-        }
         this.token = token;
     }
 }
@@ -90,10 +87,22 @@ class ReturnStatement extends Statement {
     }
 }
 
+class ExpressionStatement extends Expression {
+    constructor(token, expression = null) {
+        super(token);
+        this.expression = expression;
+    }
+
+    toString() {
+        return this.expression;
+    }
+}
+
 module.exports = {
     ASTNode,
     Statement,
     Expression,
+    ExpressionStatement,
     Program,
     Identifier,
     LetStatement,

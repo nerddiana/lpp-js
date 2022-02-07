@@ -1,6 +1,33 @@
-const { Program, LetStatement, ReturnStatement, Identifier } = require("./ast");
+const {
+    Program,
+    ExpressionStatement,
+    LetStatement,
+    ReturnStatement,
+    Identifier
+} = require("./ast");
 const { Token, TokenType } = require("./token");
 const { Lexer } = require("./lexer");
+
+class Precedence {
+    static LOWEST = 0
+    static EQUALS = 1
+    static LESSGREATER = 2
+    static SUM = 3
+    static PRODUCT = 4
+    static PREFIX = 5
+    static CALL = 6
+
+    static getPrecedences(precedence = null) {
+        const precedences = Object
+            .entries(this)
+            .sort((a, b) => a[1] - b[1])
+            .map(e => e[0]);
+        if (precedence !== null) {
+            return precedences[precedence];
+        }
+        return precedences;
+    }
+}
 
 class Parser {
     constructor(lexer) {
@@ -11,6 +38,9 @@ class Parser {
         this._current_token = null;
         this._peek_token = null;
         this._errors = [];
+
+        this._prefix_parse_fns = this.#registerPrefixFns();
+        this._infix_parse_fns = this.#registerInfixFns();
 
         this.#advanceTokens();
         this.#advanceTokens();
@@ -67,6 +97,54 @@ class Parser {
         }
     }
 
+    #parseExpression(precedence) {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        let prefix_parse_fn = null
+
+        try {
+            prefix_parse_fn = this._prefix_parse_fns[this._current_token.tokenType].bind(this);
+        } catch (error) {
+            return null;
+        }
+
+        const left_expression = prefix_parse_fn();
+
+        return left_expression;
+    }
+
+    #parseExpressionStatement() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        const expression_statement = new ExpressionStatement(this._current_token);
+        expression_statement.expression = this.#parseExpression(Precedence.LOWEST);
+
+        if (this._peek_token === null) {
+            throw new Error(`current peek token is null`);
+        }
+
+        if (this._peek_token.tokenType === TokenType.SEMICOLON) {
+            this.#advanceTokens();
+        }
+
+        return expression_statement;
+    }
+
+    #parseIdentifier() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        return new Identifier(
+            this._current_token,
+            this._current_token.literal,
+        );
+    }
+
     #parseLetStatement() {
         if (this._current_token !== null) {
             const let_statement = new LetStatement(this._current_token);
@@ -75,7 +153,7 @@ class Parser {
                 return null;
             }
 
-            let_statement.name = new Identifier(this._current_token, this._current_token.literal);
+            let_statement.name = this.#parseIdentifier();
 
             if (!this.#expectedToken(TokenType.ASSIGN)) {
                 return null;
@@ -119,7 +197,17 @@ class Parser {
         } else {
             throw new Error(`current token is null`);
         }
-        return null;
+        return this.#parseExpressionStatement();
+    }
+
+    #registerPrefixFns() {
+        return {
+            [TokenType.IDENT]: this.#parseIdentifier
+        };
+    }
+
+    #registerInfixFns() {
+        return {};
     }
 }
 

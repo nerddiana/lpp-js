@@ -1,6 +1,15 @@
 let test = require("tape");
 let { TokenType, Token } = require("../../src/modules/token.js");
-let { ASTNode, Statement, LetStatement, ReturnStatement, Expression, Program, Identifier } = require("../../src/modules/ast.js");
+let {
+    ASTNode,
+    Statement,
+    LetStatement,
+    ReturnStatement,
+    Expression,
+    Program,
+    Identifier,
+    ExpressionStatement
+} = require("../../src/modules/ast.js");
 let { Lexer } = require("../../src/modules/lexer.js");
 let { Parser } = require("../../src/modules/parser.js");
 
@@ -132,4 +141,68 @@ test("[PARSER]: Test program AST ReturnStatement", function (t) {
 
     t.deepEqual(programStr, "regresa x;");
     t.end();
+});
+
+const testProgramStatements = function (
+    t,
+    parser,
+    program,
+    expression_statement_count = 1) {
+    
+    if (parser.errors) {
+        console.log(parser.errors.join("\n"));
+    }
+
+    t.equal(parser.errors?.length, 0);
+    t.equal(program.statements?.length, expression_statement_count);
+    t.equal(program.statements[0] instanceof ExpressionStatement, true);
+}
+
+const testLiteralExpression = function (
+    t,
+    expression,
+    expected_value
+) {
+    const value_type = typeof expected_value;
+
+    if (value_type === "string") {
+        testIdentifier(t, expression, expected_value);
+    } else {
+        t.fail();
+    }
+}
+
+const testIdentifier = function (
+    t,
+    expression,
+    expected_value
+) {
+    t.equal(expression instanceof Identifier, true);
+
+    const identifier = expression;
+
+    t.equal(identifier.value, expected_value);
+    t.equal(identifier.token.literal, expected_value);
+    t.end();
+}
+
+test("[PARSER]: test identifier expression", function (t) {
+    const src = `
+        foobar;
+    `;
+
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    const program = parser.parseProgram();
+
+    testProgramStatements(t, parser, program);
+
+    expression_statement = program.statements[0];
+
+    if (expression_statement === null) {
+        throw new Error(`expression_statement is null`);
+    }
+
+    testLiteralExpression(t, expression_statement.expression, "foobar");
 });
