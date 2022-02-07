@@ -4,10 +4,6 @@ class ASTNode {
     tokenLiteral() {
         return this.token.literal;
     }
-
-    toString() {
-        return `${this.constructor.name} ${JSON.stringify(this)}`;
-    }
 }
 
 class Statement extends ASTNode {
@@ -57,10 +53,6 @@ class Identifier extends Expression {
     constructor(token, value) {
         super(token);
         this.value = value;
-    }
-
-    toString() {
-        return this.value;
     }
 }
 

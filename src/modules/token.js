@@ -34,20 +34,12 @@ class TokenType {
     static getTokenTypes() {
         return Object.keys(this);
     }
-
-    toString() {
-        return `TokenType ${this.name}}`;
-    }
 }
 
 class Token {
     constructor(tokenType, literal) {
         this.tokenType = tokenType;
         this.literal = literal;
-    }
-
-    toString() {
-        return `Token ${JSON.stringify(this)}`;
     }
 }
 

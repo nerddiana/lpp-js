@@ -1,6 +1,5 @@
 const { Lexer } = require("./lexer.js");
 const { Parser } = require("./parser.js");
-const { TokenType } = require("./token.js");
 
 module.exports = {
     lexer(uInput, context, filename, callback) {
