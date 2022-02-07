@@ -354,7 +354,6 @@ test("[PARSER]: test infix expressions", function (t) {
     ];
 
     program.statements.map((statement, s) => {
-        console.log(s);
         const [left, operator, right] = expectedStatements[s];
         testInfixExpression(t, statement, left, operator, right);
     })

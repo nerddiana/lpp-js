@@ -56,9 +56,6 @@ class Parser {
         this._prefix_parse_fns = this.#registerPrefixFns();
         this._infix_parse_fns = this.#registerInfixFns();
 
-        console.log(this._prefix_parse_fns);
-        console.log(this._infix_parse_fns);
-
         this.#advanceTokens();
         this.#advanceTokens();
     }
