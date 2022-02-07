@@ -1,6 +1,6 @@
 let test = require("tape");
 let { TokenType, Token } = require("../../src/modules/token.js");
-let { ASTNode, Statement, LetStatement, Expression, Program } = require("../../src/modules/ast.js");
+let { ASTNode, Statement, LetStatement, ReturnStatement, Expression, Program } = require("../../src/modules/ast.js");
 let { Lexer } = require("../../src/modules/lexer.js");
 let { Parser } = require("../../src/modules/parser.js");
 
@@ -72,5 +72,26 @@ test("[PARSER]: test parse errors", function (t) {
     parser.parseProgram();
 
     t.equal(parser.errors?.length, 1);
+    t.end();
+});
+
+test("[PARSER]: test return statements", function (t) {
+    const src = `
+        regresa 5;
+        regresa foo;
+    `;
+
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    const program = parser.parseProgram();
+
+    t.equal(program.statements?.length, 2);
+
+    program.statements?.map((s) => {
+        t.equal(s.tokenLiteral(), "regresa");
+        t.equal(s instanceof ReturnStatement, true);
+    });
+
     t.end();
 });

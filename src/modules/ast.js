@@ -64,6 +64,13 @@ class LetStatement extends Statement {
     }
 }
 
+class ReturnStatement extends Statement {
+    constructor(token, return_value = null) {
+        super(token);
+        this.return_value = return_value;
+    }
+}
+
 module.exports = {
     ASTNode,
     Statement,
@@ -71,4 +78,5 @@ module.exports = {
     Program,
     Identifier,
     LetStatement,
+    ReturnStatement,
 };

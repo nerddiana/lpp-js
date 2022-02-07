@@ -1,4 +1,4 @@
-const { Program, LetStatement, Identifier } = require("./ast");
+const { Program, LetStatement, ReturnStatement, Identifier } = require("./ast");
 const { Token, TokenType } = require("./token");
 const { Lexer } = require("./lexer");
 
@@ -92,10 +92,29 @@ class Parser {
         }
     }
 
+    #parseReturnStatement() {
+        if (this._current_token !== null) {
+            const return_statement = new ReturnStatement(this._current_token);
+
+            this.#advanceTokens();
+
+            // TODO: terminar cuándo sepamos parsear experesiones
+            while(this._current_token.tokenType !== TokenType.SEMICOLON) {
+                this.#advanceTokens();
+            }
+
+            return return_statement;
+        } else {
+            throw new Error(`current token is null`);
+        }
+    }
+
     #parseStatement() {
         if (this._current_token !== null) {
             if (this._current_token.tokenType === TokenType.LET) {
                 return this.#parseLetStatement();
+            } else if (this._current_token.tokenType === TokenType.RETURN) {
+                return this.#parseReturnStatement();
             }
         } else {
             throw new Error(`current token is null`);
