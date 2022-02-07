@@ -1,4 +1,5 @@
 const {
+    Prefix,
     Program,
     ExpressionStatement,
     LetStatement,
@@ -104,14 +105,16 @@ class Parser {
         }
 
         let prefix_parse_fn = null
+        let left_expression = null
 
         try {
             prefix_parse_fn = this._prefix_parse_fns[this._current_token.tokenType.name];
+            left_expression = prefix_parse_fn();
         } catch (error) {
+            const message = `No se encontró ninguna función para parsear ${this._current_token.literal}.`;
+            this._errors.push(message);
             return null;
         }
-
-        const left_expression = prefix_parse_fn();
 
         return left_expression;
     }
@@ -192,6 +195,20 @@ class Parser {
         }
     }
 
+    #parsePrefixExpression() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        const prefix_expression = new Prefix(this._current_token, this._current_token.literal);
+
+        this.#advanceTokens();
+
+        prefix_expression.right = this.#parseExpression(Precedence.PREFIX);
+
+        return prefix_expression;
+    }
+
     #parseReturnStatement() {
         if (this._current_token !== null) {
             const return_statement = new ReturnStatement(this._current_token);
@@ -226,6 +243,8 @@ class Parser {
         return {
             [TokenType.IDENT.name]: this.#parseIdentifier.bind(this),
             [TokenType.INT.name]: this.#parseInteger.bind(this),
+            [TokenType.MINUS.name]: this.#parsePrefixExpression.bind(this),
+            [TokenType.NEGATION.name]: this.#parsePrefixExpression.bind(this),
         };
     }
 

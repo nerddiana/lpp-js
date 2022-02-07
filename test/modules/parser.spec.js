@@ -9,7 +9,8 @@ let {
     Program,
     Identifier,
     ExpressionStatement,
-    Integer
+    Integer,
+    Prefix
 } = require("../../src/modules/ast.js");
 let { Lexer } = require("../../src/modules/lexer.js");
 let { Parser } = require("../../src/modules/parser.js");
@@ -259,5 +260,37 @@ test("[PARSER]: test integer expression as AST", function (t) {
     const programStr = program.toString();
 
     t.deepEqual(programStr, "regresa 5;");
+    t.end();
+});
+
+test("[PARSER]: test prefix expressions", function (t) {
+    const src = `
+        !5; -15;
+    `;
+
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    const program = parser.parseProgram();
+
+    testProgramStatements(t, parser, program, 2);
+
+    const expectedStatements = [
+        ["!", 5],
+        ["-", 15]
+    ];
+    program.statements.map((statement, s) => {
+        const [operator, value] = expectedStatements[s];
+        t.equal(statement.expression instanceof Prefix, true);
+        const prefix = statement.expression;
+        t.equal(prefix.operator, operator);
+        
+        if (prefix.right === null) {
+            throw new Error(`prefix.right is null`);
+        }
+
+        t.equal(prefix.right.value, value);
+    })
+
     t.end();
 });

@@ -68,6 +68,14 @@ class Integer extends Expression {
     }
 }
 
+class Prefix extends Expression {
+    constructor(token, operator, right) {
+        super(token);
+        this.operator = operator;
+        this.right = right;
+    }
+}
+
 class LetStatement extends Statement {
     constructor(token, name = null, value = null) {
         super(token);
@@ -110,6 +118,7 @@ module.exports = {
     Statement,
     Expression,
     ExpressionStatement,
+    Prefix,
     Program,
     Identifier,
     Integer,
