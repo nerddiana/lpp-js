@@ -6,6 +6,7 @@ const {
     ReturnStatement,
     Identifier,
     Integer,
+    Infix,
 } = require("./ast");
 const { Token, TokenType } = require("./token");
 const { Lexer } = require("./lexer");
@@ -31,6 +32,17 @@ class Precedence {
     }
 }
 
+const PRECEDENCES = {
+    [TokenType.PLUS.name]: Precedence.SUM,
+    [TokenType.MINUS.name]: Precedence.SUM,
+    [TokenType.MULTIPLICATION.name]: Precedence.PRODUCT,
+    [TokenType.DIVISION.name]: Precedence.PRODUCT,
+    [TokenType.GT.name]: Precedence.LESSGREATER,
+    [TokenType.LT.name]: Precedence.LESSGREATER,
+    [TokenType.EQ.name]: Precedence.EQUALS,
+    [TokenType.NOT_EQ.name]: Precedence.EQUALS,
+};
+
 class Parser {
     constructor(lexer) {
         if (lexer instanceof Lexer === false) {
@@ -43,6 +55,9 @@ class Parser {
 
         this._prefix_parse_fns = this.#registerPrefixFns();
         this._infix_parse_fns = this.#registerInfixFns();
+
+        console.log(this._prefix_parse_fns);
+        console.log(this._infix_parse_fns);
 
         this.#advanceTokens();
         this.#advanceTokens();
@@ -75,6 +90,22 @@ class Parser {
         this._peek_token = this._lexer.nextToken();
     }
 
+    #currentPrecedence() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        try {
+            const precedence = PRECEDENCES[this._current_token.tokenType.name];
+            if (!precedence) {
+                throw new Error();
+            }
+            return precedence;
+        } catch (error) {
+            return Precedence.LOWEST;
+        }
+    }
+
     #expectedToken(tokenType) {
         const tokenTypes = TokenType.getTokenTypes();
         if (!tokenTypes.includes(tokenType.name)) {
@@ -104,16 +135,40 @@ class Parser {
             throw new Error(`current token is null`);
         }
 
-        let prefix_parse_fn = null
-        let left_expression = null
+        let prefix_parse_fn = null;
 
         try {
             prefix_parse_fn = this._prefix_parse_fns[this._current_token.tokenType.name];
-            left_expression = prefix_parse_fn();
+            if (!prefix_parse_fn) {
+                throw new Error();
+            }
         } catch (error) {
             const message = `No se encontró ninguna función para parsear ${this._current_token.literal}.`;
             this._errors.push(message);
             return null;
+        }
+
+        let left_expression = prefix_parse_fn();
+
+        if (this._peek_token === null) {
+            throw new Error(`peek token is null`);
+        }
+
+        while (
+            this._peek_token.tokenType !== TokenType.SEMICOLON &&
+            precedence < this.#peekPrecedence()
+        ) {
+            try {
+                const infix_parse_fn = this._infix_parse_fns[this._peek_token.tokenType.name];
+                this.#advanceTokens();
+
+                if (left_expression === null) {
+                    throw new Error(`left_expression is null`);
+                }
+                left_expression = infix_parse_fn(left_expression);
+            } catch (error) {
+                return left_expression;
+            }
         }
 
         return left_expression;
@@ -147,6 +202,25 @@ class Parser {
             this._current_token,
             this._current_token.literal,
         );
+    }
+
+    #parseInfixExpression(left) {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        const infix = new Infix(
+            this._current_token,
+            this.left = left,
+            this._current_token.literal
+        );
+
+        const precedence = this.#currentPrecedence();
+        this.#advanceTokens();
+
+        infix.right = this.#parseExpression(precedence);
+
+        return infix;
     }
 
     #parseInteger() {
@@ -239,6 +313,22 @@ class Parser {
         return this.#parseExpressionStatement();
     }
 
+    #peekPrecedence() {
+        if (this._peek_token === null) {
+            throw new Error(`peek token is null`);
+        }
+
+        try {
+            const precedence = PRECEDENCES[this._peek_token.tokenType.name];
+            if (!precedence) {
+                throw new Error();
+            }
+            return precedence;
+        } catch (error) {
+            return Precedence.LOWEST;
+        }
+    }
+
     #registerPrefixFns() {
         return {
             [TokenType.IDENT.name]: this.#parseIdentifier.bind(this),
@@ -249,7 +339,16 @@ class Parser {
     }
 
     #registerInfixFns() {
-        return {};
+        return {
+            [TokenType.PLUS.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.MINUS.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.DIVISION.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.MULTIPLICATION.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.EQ.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.NOT_EQ.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.LT.name]: this.#parseInfixExpression.bind(this),
+            [TokenType.GT.name]: this.#parseInfixExpression.bind(this),
+        };
     }
 }
 

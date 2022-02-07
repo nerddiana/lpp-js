@@ -9,6 +9,7 @@ let {
     Program,
     Identifier,
     ExpressionStatement,
+    Infix,
     Integer,
     Prefix
 } = require("../../src/modules/ast.js");
@@ -156,6 +157,8 @@ const testProgramStatements = function (
     }
 
     t.equal(parser.errors?.length, 0);
+    console.dir(program.statements, { depth: null });
+    console.log(program.statements?.length, expression_statement_count);
     t.equal(program.statements?.length, expression_statement_count);
     t.equal(program.statements[0] instanceof ExpressionStatement, true);
 }
@@ -199,6 +202,8 @@ test("[PARSER]: test identifier expression", function (t) {
     const parser = new Parser(lexer);
 
     const program = parser.parseProgram();
+
+    console.dir(program, { depth: null });
 
     testProgramStatements(t, parser, program);
 
@@ -292,5 +297,73 @@ test("[PARSER]: test prefix expressions", function (t) {
         t.equal(prefix.right.value, value);
     })
 
+    t.end();
+});
+
+const testInfixExpression = function (
+    t,
+    statement,
+    left,
+    operator,
+    right
+) {
+    t.equal(statement.expression instanceof Infix, true);
+    const infix = statement.expression;
+    t.equal(infix.operator, operator);
+
+    if (infix.left === null) {
+        throw new Error(`prefix.left is null`);
+    }
+    
+    t.equal(infix.left.value, left);
+
+    if (infix.right === null) {
+        throw new Error(`prefix.right is null`);
+    }
+
+    t.equal(infix.right.value, right);
+}
+
+test("[PARSER]: test infix expressions", function (t) {
+    const src = `
+        5 + 5;
+        5 - 5;
+        5 * 5;
+        5 / 5;
+        5 > 5;
+        5 < 5;
+        5 == 5;
+        5 != 5;
+    `;
+
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    const program = parser.parseProgram();
+
+    testProgramStatements(t, parser, program, 8);
+    const expectedStatements = [
+        [5, "+", 5],
+        [5, "-", 5],
+        [5, "*", 5],
+        [5, "/", 5],
+        [5, ">", 5],
+        [5, "<", 5],
+        [5, "==", 5],
+        [5, "!=", 5],
+    ];
+
+    program.statements.map((statement, s) => {
+        console.log(s);
+        const [left, operator, right] = expectedStatements[s];
+        testInfixExpression(t, statement, left, operator, right);
+    })
+
+    t.end();
+});
+
+test("[PARSER]: test precedences", function (t) {
+
+    t.pass();
     t.end();
 });
