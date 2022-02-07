@@ -157,8 +157,6 @@ const testProgramStatements = function (
     }
 
     t.equal(parser.errors?.length, 0);
-    console.dir(program.statements, { depth: null });
-    console.log(program.statements?.length, expression_statement_count);
     t.equal(program.statements?.length, expression_statement_count);
     t.equal(program.statements[0] instanceof ExpressionStatement, true);
 }
@@ -202,8 +200,6 @@ test("[PARSER]: test identifier expression", function (t) {
     const parser = new Parser(lexer);
 
     const program = parser.parseProgram();
-
-    console.dir(program, { depth: null });
 
     testProgramStatements(t, parser, program);
 
