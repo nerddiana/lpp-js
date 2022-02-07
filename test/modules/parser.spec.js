@@ -1,6 +1,6 @@
 let test = require("tape");
 let { TokenType, Token } = require("../../src/modules/token.js");
-let { ASTNode, Statement, LetStatement, ReturnStatement, Expression, Program } = require("../../src/modules/ast.js");
+let { ASTNode, Statement, LetStatement, ReturnStatement, Expression, Program, Identifier } = require("../../src/modules/ast.js");
 let { Lexer } = require("../../src/modules/lexer.js");
 let { Parser } = require("../../src/modules/parser.js");
 
@@ -93,5 +93,43 @@ test("[PARSER]: test return statements", function (t) {
         t.equal(s instanceof ReturnStatement, true);
     });
 
+    t.end();
+});
+
+test("[PARSER]: Test program AST LetStatement", function (t) {
+    const program = new Program([
+        new LetStatement(
+            new Token(TokenType.LET, "variable"),
+            new Identifier(
+                new Token(TokenType.IDENT, "mi_var"),
+                "mi_var"
+            ),
+            new Identifier(
+                new Token(TokenType.IDENT, "otra_var"),
+                "otra_var"
+            )
+        )
+    ]);
+
+    const programStr = program.toString();
+
+    t.deepEqual(programStr, "variable mi_var = otra_var;");
+    t.end();
+});
+
+test("[PARSER]: Test program AST ReturnStatement", function (t) {
+    const program = new Program([
+        new ReturnStatement(
+            new Token(TokenType.LET, "regresa"),
+            new Identifier(
+                new Token(TokenType.IDENT, "x"),
+                "x"
+            )
+        )
+    ]);
+
+    const programStr = program.toString();
+
+    t.deepEqual(programStr, "regresa x;");
     t.end();
 });

@@ -14,6 +14,10 @@ class Statement extends ASTNode {
         }
         this.token = token;
     }
+
+    toString() {
+        return `${this.token.literal}`;
+    }
 }
 
 class Expression extends ASTNode {
@@ -47,6 +51,10 @@ class Program extends ASTNode {
         }
         return "";
     }
+
+    toString() {
+        return this.statements.map(s => s.toString()).join("");
+    }
 }
 
 class Identifier extends Expression {
@@ -62,12 +70,23 @@ class LetStatement extends Statement {
         this.name = name;
         this.value = value;
     }
+
+    toString() {
+        const name = this.name.token.literal;
+        const value = this.value.token.literal;
+        return `variable ${name} = ${value};`;
+    }
 }
 
 class ReturnStatement extends Statement {
     constructor(token, return_value = null) {
         super(token);
         this.return_value = return_value;
+    }
+
+    toString() {
+        let value = this.return_value.token.literal;
+        return `regresa ${value};`;
     }
 }
 
