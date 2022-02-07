@@ -8,7 +8,8 @@ let {
     Expression,
     Program,
     Identifier,
-    ExpressionStatement
+    ExpressionStatement,
+    Integer
 } = require("../../src/modules/ast.js");
 let { Lexer } = require("../../src/modules/lexer.js");
 let { Parser } = require("../../src/modules/parser.js");
@@ -242,4 +243,21 @@ test("[PARSER]: test integer expression", function (t) {
     }
 
     testLiteralExpression(t, statement.expression, 5);
+});
+
+test("[PARSER]: test integer expression as AST", function (t) {
+    const program = new Program([
+        new ReturnStatement(
+            new Token(TokenType.LET, "regresa"),
+            new Integer(
+                new Token(TokenType.IDENT, "5"),
+                5
+            )
+        )
+    ]);
+
+    const programStr = program.toString();
+
+    t.deepEqual(programStr, "regresa 5;");
+    t.end();
 });
