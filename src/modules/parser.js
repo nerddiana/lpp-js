@@ -10,8 +10,14 @@ class Parser {
         this._lexer = lexer;
         this._current_token = null;
         this._peek_token = null;
+        this._errors = [];
+
         this.#advanceTokens();
         this.#advanceTokens();
+    }
+
+    get errors() {
+        return this._errors;
     }
 
     parseProgram() {
@@ -47,7 +53,18 @@ class Parser {
             this.#advanceTokens();
             return true;
         }
+
+        this.#expectedTokenError(tokenType);
         return false;
+    }
+
+    #expectedTokenError(tokenType) {
+        if (this._peek_token !== null) {
+            const error = `Se esperaba "${tokenType.es_name}", pero se obtuvo "${this._peek_token.literal}"`;
+            this._errors.push(error);
+        } else {
+            throw new Error(`Peek token is null`);
+        }
     }
 
     #parseLetStatement() {

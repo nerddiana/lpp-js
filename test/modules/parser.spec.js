@@ -60,3 +60,17 @@ test("[PARSER]: test names in let statements", function (t) {
 
     t.end();
 });
+
+test("[PARSER]: test parse errors", function (t) {
+    const src = `
+        variable x 5;
+    `;
+
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    parser.parseProgram();
+
+    t.equal(parser.errors?.length, 1);
+    t.end();
+});
