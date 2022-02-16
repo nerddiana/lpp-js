@@ -59,6 +59,10 @@ class Identifier extends Expression {
         super(token);
         this.value = value;
     }
+
+    toString() {
+        return this.value;
+    }
 }
 
 class Integer extends Expression {
@@ -66,12 +70,20 @@ class Integer extends Expression {
         super(token);
         this.value = value;
     }
+
+    toString() {
+        return this.value.toString();
+    }
 }
 
 class Boolean extends Expression {
     constructor(token, value) {
         super(token);
         this.value = value;
+    }
+
+    toString() {
+        return this.tokenLiteral();
     }
 }
 
@@ -81,6 +93,10 @@ class Prefix extends Expression {
         this.operator = operator;
         this.right = right;
     }
+
+    toString() {
+        return `(${this.operator}${this.right.toString()})`;
+    }
 }
 
 class Infix extends Expression {
@@ -89,6 +105,10 @@ class Infix extends Expression {
         this.left = left;
         this.operator = operator;
         this.right = right;
+    }
+
+    toString() {
+        return `(${this.left.toString()} ${this.operator} ${this.right ? this.right.toString() : ''})`;
     }
 }
 
@@ -125,7 +145,7 @@ class ExpressionStatement extends Expression {
     }
 
     toString() {
-        return this.expression;
+        return this.expression.toString();
     }
 }
 

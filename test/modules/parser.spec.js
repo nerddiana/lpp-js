@@ -282,6 +282,7 @@ test("[PARSER]: test integer expression as AST", function (t) {
 test("[PARSER]: test prefix expressions", function (t) {
     const src = `
         !5; -15;
+        !verdadero; -falso;
     `;
 
     const lexer = new Lexer(src);
@@ -289,11 +290,13 @@ test("[PARSER]: test prefix expressions", function (t) {
 
     const program = parser.parseProgram();
 
-    testProgramStatements(t, parser, program, 2);
+    testProgramStatements(t, parser, program, 4);
 
     const expectedStatements = [
         ["!", 5],
-        ["-", 15]
+        ["-", 15],
+        ["!", true],
+        ["-", false]
     ];
     program.statements.map((statement, s) => {
         const [operator, value] = expectedStatements[s];
@@ -345,6 +348,8 @@ test("[PARSER]: test infix expressions", function (t) {
         5 < 5;
         5 == 5;
         5 != 5;
+        verdadero == verdadero;
+        verdadero != falso;
     `;
 
     const lexer = new Lexer(src);
@@ -352,7 +357,7 @@ test("[PARSER]: test infix expressions", function (t) {
 
     const program = parser.parseProgram();
 
-    testProgramStatements(t, parser, program, 8);
+    testProgramStatements(t, parser, program, 10);
     const expectedStatements = [
         [5, "+", 5],
         [5, "-", 5],
@@ -362,6 +367,8 @@ test("[PARSER]: test infix expressions", function (t) {
         [5, "<", 5],
         [5, "==", 5],
         [5, "!=", 5],
+        [true, "==", true],
+        [true, "!=", false]
     ];
 
     program.statements.map((statement, s) => {
@@ -394,6 +401,38 @@ test("[PARSER]: test boolean expression.", function (t) {
         }
 
         testLiteralExpression(t, statement.expression, expectedStatement);
+    });
+
+    t.end();
+});
+
+test("[PARSER]: test operator precedence.", function (t) {
+    const testSources = [
+        ['-a * b;', '((-a) * b)', 1],
+        ['!-a;', '(!(-a))', 1],
+        ['a + b + c;', '((a + b) + c)', 1],
+        ['a + b - c;', '((a + b) - c)', 1],
+        ['a * b * c;', '((a * b) * c)', 1],
+        ['a + b / c;', '(a + (b / c))', 1],
+        ['a * b / c;', '((a * b) / c)', 1],
+        ['a + b * c + d / e - f;', '(((a + (b * c)) + (d / e)) - f)', 1],
+        ['5 > 4 == 3 < 4;', '((5 > 4) == (3 < 4))', 1],
+        ['3 - 4 * 5 == 3 * 1 + 4 * 5;', '((3 - (4 * 5)) == ((3 * 1) + (4 * 5)))', 1],
+        ['3 + 4; -5 * 5;', '(3 + 4)((-5) * 5)', 2],
+        ['verdadero;', 'verdadero', 1],
+        ['falso;', 'falso', 1],
+        ['3 > 5 == verdadero;', '((3 > 5) == verdadero)', 1],
+        ['3 < 5 == falso;', '((3 < 5) == falso)', 1]
+    ];
+
+    testSources.map(([source, expected_result, count]) => {
+        const lexer = new Lexer(source);
+        const parser = new Parser(lexer);
+
+        const program = parser.parseProgram();
+
+        testProgramStatements(t, parser, program, count);
+        t.equals(program.toString(), expected_result);
     });
 
     t.end();
