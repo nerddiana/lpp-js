@@ -95,7 +95,7 @@ class Prefix extends Expression {
     }
 
     toString() {
-        return `(${this.operator}${this.right.toString()})`;
+        return `(${this.operator}${this.right ? this.right.toString() : ""})`;
     }
 }
 
@@ -145,7 +145,7 @@ class ExpressionStatement extends Expression {
     }
 
     toString() {
-        return this.expression.toString();
+        return this.expression ? this.expression.toString() : "";
     }
 }
 

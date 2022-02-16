@@ -191,6 +191,22 @@ class Parser {
         return expression_statement;
     }
 
+    #parseGroupedExpression() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        this.#advanceTokens();
+
+        const expression = this.#parseExpression(Precedence.LOWEST);
+
+        if (!this.#expectedToken(TokenType.RPAREN)) {
+            return null;
+        }
+
+        return expression;
+    }
+
     #parseIdentifier() {
         if (this._current_token === null) {
             throw new Error(`current token is null`);
@@ -354,6 +370,7 @@ class Parser {
             [TokenType.TRUE.name]: this.#parseBoolean.bind(this),
             [TokenType.IDENT.name]: this.#parseIdentifier.bind(this),
             [TokenType.INT.name]: this.#parseInteger.bind(this),
+            [TokenType.LPAREN.name]: this.#parseGroupedExpression.bind(this),
             [TokenType.MINUS.name]: this.#parsePrefixExpression.bind(this),
             [TokenType.NEGATION.name]: this.#parsePrefixExpression.bind(this),
         };

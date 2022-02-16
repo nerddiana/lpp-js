@@ -422,7 +422,11 @@ test("[PARSER]: test operator precedence.", function (t) {
         ['verdadero;', 'verdadero', 1],
         ['falso;', 'falso', 1],
         ['3 > 5 == verdadero;', '((3 > 5) == verdadero)', 1],
-        ['3 < 5 == falso;', '((3 < 5) == falso)', 1]
+        ['3 < 5 == falso;', '((3 < 5) == falso)', 1],
+        ['1 + (2 + 3) + 4;', '((1 + (2 + 3)) + 4)', 1],
+        ['(5 + 5) * 2;', '((5 + 5) * 2)', 1],
+        ['2 / (5 + 5);', '(2 / (5 + 5))', 1],
+        ['-(5 + 5);', '(-(5 + 5))', 1],
     ];
 
     testSources.map(([source, expected_result, count]) => {
