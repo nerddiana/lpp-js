@@ -6,6 +6,7 @@ const {
     ReturnStatement,
     Identifier,
     Integer,
+    Boolean,
     Infix,
 } = require("./ast");
 const { Token, TokenType } = require("./token");
@@ -241,6 +242,27 @@ class Parser {
         return integer;
     }
 
+    #parseBoolean() {
+        if (this._current_token === null) {
+            throw new Error(`current token is null`);
+        }
+
+        let bool = null;
+
+        try {
+            bool = new Boolean(
+                this._current_token,
+                this._current_token.tokenType === TokenType.TRUE,
+            );
+        } catch (error) {
+            const message = `No se pudo parsear ${this._current_token.literal} cómo un booleano.`;
+            this._errors.push(message);
+            return null;
+        }
+
+        return bool;
+    }
+
     #parseLetStatement() {
         if (this._current_token !== null) {
             const let_statement = new LetStatement(this._current_token);
@@ -328,6 +350,8 @@ class Parser {
 
     #registerPrefixFns() {
         return {
+            [TokenType.FALSE.name]: this.#parseBoolean.bind(this),
+            [TokenType.TRUE.name]: this.#parseBoolean.bind(this),
             [TokenType.IDENT.name]: this.#parseIdentifier.bind(this),
             [TokenType.INT.name]: this.#parseInteger.bind(this),
             [TokenType.MINUS.name]: this.#parsePrefixExpression.bind(this),

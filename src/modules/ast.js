@@ -68,6 +68,13 @@ class Integer extends Expression {
     }
 }
 
+class Boolean extends Expression {
+    constructor(token, value) {
+        super(token);
+        this.value = value;
+    }
+}
+
 class Prefix extends Expression {
     constructor(token, operator, right) {
         super(token);
@@ -132,6 +139,7 @@ module.exports = {
     Identifier,
     Infix,
     Integer,
+    Boolean,
     LetStatement,
     ReturnStatement,
 };

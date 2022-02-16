@@ -172,6 +172,8 @@ const testLiteralExpression = function (
         testIdentifier(t, expression, expected_value);
     } else if (value_type === "number") {
         testInteger(t, expression, expected_value);
+    } else if (value_type === "boolean") {
+        testBoolean(t, expression, expected_value);
     } else {
         t.fail();
     }
@@ -224,6 +226,19 @@ const testInteger = function (
     t.equal(integer.value, expected_value);
     t.equal(integer.token.literal, `${expected_value}`);
     t.end();
+}
+
+const testBoolean = function (
+    t,
+    expression,
+    expected_value
+) {
+    t.equal(typeof expected_value === "boolean", true);
+
+    const boolean = expression;
+
+    t.equal(boolean.value, expected_value);
+    t.equal(boolean.token.literal, expected_value ? "verdadero" : "falso");
 }
 
 test("[PARSER]: test integer expression", function (t) {
@@ -357,8 +372,29 @@ test("[PARSER]: test infix expressions", function (t) {
     t.end();
 });
 
-test("[PARSER]: test precedences", function (t) {
+test("[PARSER]: test boolean expression.", function (t) {
+    const src = `
+        verdadero;
+        falso;
+    `;
 
-    t.pass();
+    const lexer = new Lexer(src);
+    const parser = new Parser(lexer);
+
+    const program = parser.parseProgram();
+
+    testProgramStatements(t, parser, program, 2);
+    const expectedStatements = [true, false];
+
+    program.statements.map((statement, s) => {
+        const expectedStatement = expectedStatements[s];
+
+        if (statement === null) {
+            console.log("statement is null");
+        }
+
+        testLiteralExpression(t, statement.expression, expectedStatement);
+    });
+
     t.end();
 });
